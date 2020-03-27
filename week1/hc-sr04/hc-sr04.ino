@@ -34,12 +34,12 @@ void setup()
   while(!Serial) {} //you must open the Serial Monitor to get past this step!
   Serial.println("Hi!");
 
-  cli(); //disable interupts while we mess with the control registers
+  noInterrupts(); //disable interupts while we mess with the control registers
   
   //sets timer 3 to normal mode (16-bit, fast counter)
   TCCR3A = 0; 
   
-  sei(); //re-enable interrupts
+  interrupts(); //re-enable interrupts
 
   //note that the Arduino machinery has already set the prescaler elsewhere
   //so we'll print out the value of the register to figure out what it is
@@ -66,9 +66,16 @@ void loop()
     //update the state to IDLE
     pulseState = PLS_IDLE;
 
-    //calculate the length of the pulse (in timer counts!)
+    /*
+     * Calculate the length of the pulse (in timer counts!). Note that we turn off
+     * interrupts for a VERY short period so that there is no risk of the ISR changing
+     * pulseEnd or pulseStart. As noted in class, the way the state machine works, this
+     * isn't a problem, but best practice is to ensure that no side effects can occur.
+     */
+    noInterrupts();
     uint16_t pulseLengthTimerCounts = pulseEnd - pulseStart;
-
+    interrupts();
+    
     //EDIT THIS LINE: convert pulseLengthTimerCounts, which is in timer counts, to time, in us
     //You'll need the clock frequency and the pre-scaler to convert timer counts to time
     
