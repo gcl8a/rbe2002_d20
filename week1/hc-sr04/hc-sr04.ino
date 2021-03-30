@@ -55,7 +55,7 @@ void setup()
 void loop() 
 {
   //schedule pings roughly every PING_INTERVAL milliseconds
-  if(millis() - lastPing > PING_INTERVAL)
+  if(millis() - lastPing > PING_INTERVAL && pulseState == PLS_IDLE)
   {
     lastPing = millis();
     CommandPing(trigPin); //command a ping
